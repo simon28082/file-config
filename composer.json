@@ -1,5 +1,5 @@
 {
-    "name": "root/file-config",
+    "name": "crcms/file-config",
     "keywords": ["file", "config","php"],
     "homepage": "https://github.com/crcms/file-config",
     "description": "file config put and read",

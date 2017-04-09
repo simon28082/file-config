@@ -1,17 +1,15 @@
 <?php
 namespace CrCms\FileConfig;
 
-use CrCms\Repository\Console\Commands\Magic;
-use CrCms\Repository\Console\Commands\Repository;
 use Illuminate\Support\ServiceProvider;
 
-class ConfigServiceProvider extends ServiceProvider
+class FileConfigServiceProvider extends ServiceProvider
 {
 
     /**
      * @var bool
      */
-    protected $defer = false;
+    protected $defer = true;
 
     /**
      * @var string
@@ -48,11 +46,14 @@ class ConfigServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton('file.config',function($app){
-            return Config::instance($app['config']['file_config']);
+            return Factory::fileConfig($app['config']['file_config']);
         });
     }
 
 
+    /**
+     * @return array
+     */
     public function provides()
     {
         return [

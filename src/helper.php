@@ -1,20 +1,28 @@
 <?php
+use CrCms\FileConfig\Factory;
 
-function file_config($key = null, $default = null, array $config = []) {
+/**
+ * @param null $key
+ * @param string $default
+ * @param array $config
+ * @return bool|\CrCms\FileConfig\FileConfig|string
+ */
+function file_config($key = null, string $default = '', array $config = [])
+{
 
     if (empty($config)) {
-        $config = app('config')->get('file_config');
+        $config = function_exists('app') && is_object(app('config')) ? app('config')->get('file_config') : require realpath(__DIR__.DIRECTORY_SEPARATOR.'../config/file_config.php');
     }
 
     if (is_null($key)) {
-        return \CrCms\FileConfig\Config::instance($config);
+        return Factory::fileConfig($config);
     }
 
     if (is_array($key)) {
-        array_walk($key,function($item,$key) use ($config){
-            \CrCms\FileConfig\Config::instance($config)->put($key,$item);
+        return array_walk($key,function($item,$k) use ($config){
+            Factory::fileConfig($config)->put($k,$item);
         });
     }
 
-    return \CrCms\FileConfig\Config::instance($config)->get($key, $default);
+    return Factory::fileConfig($config)->get($key, $default);
 }

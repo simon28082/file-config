@@ -4,19 +4,19 @@ namespace CrCms\FileConfig\Drives;
 use CrCms\FileConfig\Contracts\FormatConfig;
 
 /**
- * Class SerializeConfig
+ * Class JsonConfig
  * @package CrCms\FileConfig\Drives
  */
-class SerializeConfig implements FormatConfig
+class JsonConfig implements FormatConfig
 {
 
     /**
      * @param string $content
      * @return array
      */
-    public function read(string $content) : array
+    public function read(string $content): array
     {
-        return unserialize($content);
+        return json_decode($content,true);
     }
 
 
@@ -24,9 +24,9 @@ class SerializeConfig implements FormatConfig
      * @param array $content
      * @return string
      */
-    public function write(array $content) : string
+    public function write(array $content): string
     {
-        return serialize($content);
+        return json_encode($content);
     }
 
 }

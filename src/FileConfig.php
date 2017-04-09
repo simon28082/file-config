@@ -3,34 +3,71 @@ namespace CrCms\FileConfig;
 
 use Illuminate\Support\Arr;
 
-class Config
+/**
+ * Class FileConfig
+ * @package CrCms\FileConfig
+ */
+class FileConfig
 {
 
+    /**
+     * @var array
+     */
     protected $files = [];
 
-    protected static $instance = null;
 
-    private function __construct(array $config)
+    /**
+     * FileConfig constructor.
+     * @param array $config
+     */
+    public function __construct(array $config)
     {
         $this->files = $this->formatFile($config);
     }
 
-    //a.abc
+
+    /**
+     * @param string $key
+     * @return bool
+     */
     public function has(string $key) : bool
     {
         $keys = $this->formatKey($key);
+
         return (bool)Arr::has($this->read($keys['name']),$keys['key']);
     }
 
 
-    public function get(string $key,string $default = '') : string
+    /**
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function get(string $key, string $default = '') : string
     {
         $keys = $this->formatKey($key);
+
         return Arr::get($this->read($keys['name']),$keys['key'],$default);
     }
 
 
-    public function put(string $key,string $value)
+    /**
+     * @param string $key
+     * @return array
+     */
+    public function all(string $key) : array
+    {
+        $keys = $this->formatKey($key);
+
+        return $this->read($keys['name']);
+    }
+
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    public function put(string $key, string $value)
     {
         $keys = $this->formatKey($key);
 
@@ -48,13 +85,25 @@ class Config
     }
 
 
+    /**
+     * @param string $key
+     */
     public function destroy(string $key)
     {
         $keys = $this->formatKey($key);
+
         $config = $this->read($keys['name']);
+
         Arr::forget($config,$keys['key']);
+
+        $this->write($keys['name'],$config);
     }
 
+
+    /**
+     * @param string $key
+     * @return array
+     */
     protected function formatKey(string $key) : array
     {
         $keys = explode('.',$key);
@@ -66,6 +115,10 @@ class Config
     }
 
 
+    /**
+     * @param array $config
+     * @return array
+     */
     protected function formatFile(array $config) : array
     {
         foreach ($config['files'] as $key=>$file) {
@@ -76,6 +129,11 @@ class Config
         return $this->files;
     }
 
+
+    /**
+     * @param string $key
+     * @return array
+     */
     protected function read(string $key) : array
     {
         foreach ($this->files as $file=>$drive) {
@@ -85,15 +143,20 @@ class Config
             if ($filename === $key) {
                 if (file_exists($file)) {
                     return (new $drive)->read(file_get_contents($file));
-                } else {
-                    return [];
                 }
             }
         }
+
+        return [];
     }
 
 
-    protected function write(string $key,array $config) : int
+    /**
+     * @param string $key
+     * @param array $config
+     * @return int
+     */
+    protected function write(string $key, array $config) : int
     {
         foreach ($this->files as $file=>$drive) {
 
@@ -103,16 +166,7 @@ class Config
                 return file_put_contents($file,(new $drive)->write($config));
             }
         }
-    }
 
-    public static function instance(array $config) : Config
-    {
-        if (static::$instance instanceof static) {
-            return static::$instance;
-        }
-
-        static::$instance = new static($config);
-
-        return static::$instance;
+        return 0;
     }
 }

@@ -11,12 +11,28 @@ class DefaultConfig implements Config
     {
         //$content = str_replace("\r\n","\n",$content);
 
-        return explode("\n",$content);
+        $content = explode("\n",$content);
+        $array = [];
+
+        foreach ($content as $value) {
+            if (empty($value)) {
+                continue;
+            }
+            $value = explode('=',$value);
+            $array[$value[0]] = $value[1];
+        }
+
+        return $array;
+
     }
 
     public function write(array $content): string
     {
-        return implode("\n",$content);
+        $string = '';
+        foreach ($content as $key=>$value) {
+            $string .= "{$key}={$value}\n";
+        }
+        return $string;
     }
 
 

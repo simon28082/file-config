@@ -11,7 +11,7 @@ class ConfigServiceProvider extends ServiceProvider
     /**
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class ConfigServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton('file.config',function($app){
-            return Config::instance($app['config']['config']);
+            return Config::instance($app['config']['file_config']);
         });
     }
 

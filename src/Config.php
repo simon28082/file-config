@@ -41,7 +41,7 @@ class Config
         if ($this->has($key)) {
             $config = Arr::set($config,$keys['key'],$value);
         } else {
-            $config = Arr::prepend($config,$keys['key'],$value);
+            $config = Arr::prepend($config,$value,$keys['key']);
         }
 
         $this->write($keys['name'],$config);
@@ -57,9 +57,9 @@ class Config
 
     protected function formatKey(string $key) : array
     {
-        $keys = explode('.',$key)[0];
+        $keys = explode('.',$key);
 
-        $name = $keys[0];
+        $name = array_shift($keys);
         $key = implode('.',$keys);
 
         return compact('name','key');
@@ -83,20 +83,24 @@ class Config
             $filename = pathinfo($file,PATHINFO_FILENAME);
 
             if ($filename === $key) {
-                return (new $drive)->read($file);
+                if (file_exists($file)) {
+                    return (new $drive)->read(file_get_contents($file));
+                } else {
+                    return [];
+                }
             }
         }
     }
 
 
-    protected function write(string $key,array $config)
+    protected function write(string $key,array $config) : int
     {
         foreach ($this->files as $file=>$drive) {
 
             $filename = pathinfo($file,PATHINFO_FILENAME);
 
             if ($filename === $key) {
-                return (new $drive)->write($config);
+                return file_put_contents($file,(new $drive)->write($config));
             }
         }
     }

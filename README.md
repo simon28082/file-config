@@ -3,7 +3,7 @@ Sets the storage format of the configuration file
 
 ## Example
 
-file_config
+update file_config.php
 
 ```$xslt
 'files'=>[

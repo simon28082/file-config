@@ -69,7 +69,7 @@ php artisan vendor:publish --provider="CrCms\FileConfig\FileConfigServiceProvide
 ```
 
 ## Laravel Testing
-````
+
 ```$xslt
 phpunit ./tests/Config
 ```

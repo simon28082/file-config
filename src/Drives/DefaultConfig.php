@@ -27,12 +27,20 @@ class DefaultConfig implements FormatConfig
         $array = [];
 
         foreach ($content as $value) {
-            if (empty($value)) {
+
+            $value = trim($value);
+
+            if (empty($value) || strpos($value,'#') === 0) {
                 continue;
             }
 
             $value = explode('=',$value);
-            $array[$value[0]] = $value[1];
+
+            if (count($value) !== 2) {
+                continue;
+            }
+
+            $array[trim($value[0])] = trim($value[1]);
         }
 
         return $array;

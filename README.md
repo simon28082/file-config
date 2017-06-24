@@ -5,7 +5,7 @@ Sets the storage format of the configuration file
 
 update file_config.php
 
-```$xslt
+```
 'files'=>[
     /tmp/crcms
 ],
@@ -15,7 +15,7 @@ update file_config.php
 
 put
 
-```$xslt
+```
 file_config([
     crcms.a=>'a',
     crcms.b=>'b'
@@ -24,27 +24,39 @@ file_config([
 
 get
 
-```$xslt
+```
 file_config('crcms.a')
 ```
 
 all
 
-```$xslt
+```
 file_config('crcms')
 ```
 
 destroy
 
-```$xslt
+```
 file_config()->destroy('crcms.a')
 ```
+
+0.0.2 above the new load method
+
+```
+Example test.php
+key1=>value1
+key2=>value2
+
+//get all
+file_config()->load('/path/test.php')->all('test')
+```
+
 
 ## Install
 
 You can install the package via composer:
 
-```$xslt
+```
 composer require crcms/file-config
 ```
 
@@ -52,7 +64,7 @@ composer require crcms/file-config
 
 Modify ``config / app.php``
 
-```$xslt
+```
 'providers' => [
     CrCms\FileConfig\FileConfigServiceProvider::class,
 ]
@@ -64,13 +76,13 @@ Modify ``config / app.php``
 ```
 
 If you'd like to make configuration changes in the configuration file you can pubish it with the following Aritsan command:
-```$xslt
+```
 php artisan vendor:publish --provider="CrCms\FileConfig\FileConfigServiceProvider"
 ```
 
 ## Laravel Testing
 
-```$xslt
+```
 phpunit ./tests/Config
 ```
 

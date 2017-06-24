@@ -7,7 +7,10 @@ update file_config.php
 
 ```
 'files'=>[
-    /tmp/crcms
+    /tmp/crcms,
+    // Set up other parsing drivers
+    /tmp/crcms => \CrCms\FileConfig\Drives\SerializeConfig::class,
+    
 ],
 
 'default_drive'=>\CrCms\FileConfig\Drives\DefaultConfig::class,

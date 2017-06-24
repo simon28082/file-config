@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\FileConfig\Facades;
 
 use Illuminate\Support\Facades\Facade;

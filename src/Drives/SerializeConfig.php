@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\FileConfig\Drives;
 
 use CrCms\FileConfig\Contracts\FormatConfig;
@@ -9,24 +10,21 @@ use CrCms\FileConfig\Contracts\FormatConfig;
  */
 class SerializeConfig implements FormatConfig
 {
-
     /**
      * @param string $content
      * @return array
      */
-    public function read(string $content) : array
+    public function read(string $content): array
     {
         return unserialize($content);
     }
-
 
     /**
      * @param array $content
      * @return string
      */
-    public function write(array $content) : string
+    public function write(array $content): string
     {
         return serialize($content);
     }
-
 }

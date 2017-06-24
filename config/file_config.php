@@ -13,7 +13,7 @@ return [
     |
     | ]
     */
-    'files'=> [
+    'files' => [
 
     ],
 
@@ -24,5 +24,5 @@ return [
     | The default driver, when the index is a natural index, uses this driver
     |
     */
-    'default_drive'=>\CrCms\FileConfig\Drives\DefaultConfig::class,
+    'default_drive' => \CrCms\FileConfig\Drives\DefaultConfig::class,
 ];

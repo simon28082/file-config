@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\FileConfig;
 
 use Illuminate\Support\Arr;
@@ -9,12 +10,15 @@ use Illuminate\Support\Arr;
  */
 class FileConfig
 {
-
     /**
      * @var array
      */
     protected $files = [];
 
+    /**
+     * @var array
+     */
+    protected $config = [];
 
     /**
      * FileConfig constructor.
@@ -22,148 +26,149 @@ class FileConfig
      */
     public function __construct(array $config)
     {
-        $this->files = $this->formatFile($config);
+        $this->config = $config;
+        $this->files = $this->formatFile();
     }
 
-
     /**
+     * Determine whether the value exists
      * @param string $key
      * @return bool
      */
-    public function has(string $key) : bool
+    public function has(string $key): bool
     {
         $keys = $this->formatKey($key);
 
-        return (bool)Arr::has($this->read($keys['name']),$keys['key']);
+        return (bool)Arr::has($this->read($keys['name']), $keys['key']);
     }
 
-
     /**
+     * Get the specified value
      * @param string $key
      * @param string $default
      * @return string
      */
-    public function get(string $key, string $default = '') : string
+    public function get(string $key, string $default = ''): string
     {
         $keys = $this->formatKey($key);
 
-        return Arr::get($this->read($keys['name']),$keys['key'],$default);
+        return Arr::get($this->read($keys['name']), $keys['key'], $default);
     }
 
-
     /**
+     * Get all values
      * @param string $key
      * @return array
      */
-    public function all(string $key) : array
+    public function all(string $key): array
     {
         $keys = $this->formatKey($key);
 
         return $this->read($keys['name']);
     }
 
-
     /**
+     * Write new data
      * @param string $key
      * @param string $value
+     * @return bool
      */
-    public function put(string $key, string $value)
+    public function put(string $key, string $value): bool
     {
-        $keys = $this->formatKey($key);
-
-        $config = $this->read($keys['name']);
-
         $value = trim($value);
-
-        if ($this->has($key)) {
-            $config = Arr::set($config,$keys['key'],$value);
-        } else {
-            $config = Arr::prepend($config,$value,$keys['key']);
-        }
-
-        $this->write($keys['name'],$config);
-    }
-
-
-    /**
-     * @param string $key
-     */
-    public function destroy(string $key)
-    {
         $keys = $this->formatKey($key);
-
         $config = $this->read($keys['name']);
 
-        Arr::forget($config,$keys['key']);
+        $config = $this->has($key) ?
+            Arr::set($config, $keys['key'], $value) :
+            Arr::prepend($config, $value, $keys['key']);
 
-        $this->write($keys['name'],$config);
+        return (bool)$this->write($keys['name'], $config);
     }
 
+    /**
+     * delete data
+     * @param string $key
+     * @return bool
+     */
+    public function destroy(string $key): bool
+    {
+        $keys = $this->formatKey($key);
+        $config = $this->read($keys['name']);
+        Arr::forget($config, $keys['key']);
+
+        return (bool)$this->write($keys['name'], $config);
+    }
 
     /**
+     * Load the new file
+     * @param string $path
+     * @param string|null $drive
+     * @return FileConfig
+     */
+    public function load(string $path, string $drive = null): self
+    {
+        $this->files[$path] = $drive ?? $this->config['default_drive'];
+
+        return $this;
+    }
+
+    /**
+     * Format array key
      * @param string $key
      * @return array
      */
-    protected function formatKey(string $key) : array
+    protected function formatKey(string $key): array
     {
-        $keys = explode('.',$key);
-
+        $keys = explode('.', $key);
         $name = array_shift($keys);
-        $key = implode('.',$keys);
+        $key = implode('.', $keys);
 
-        return compact('name','key');
+        return compact('name', 'key');
     }
 
-
     /**
-     * @param array $config
+     * Format the file
      * @return array
      */
-    protected function formatFile(array $config) : array
+    protected function formatFile(): array
     {
-        foreach ($config['files'] as $key=>$file) {
-            $drive = is_numeric($key) ? $config['default_drive'] : $key;
+        foreach ($this->config['files'] as $key => $file) {
+            $drive = is_numeric($key) ? $this->config['default_drive'] : $key;
             $this->files[$file] = $drive;
         }
 
         return $this->files;
     }
 
-
     /**
+     * Read the configuration file
      * @param string $key
      * @return array
      */
-    protected function read(string $key) : array
+    protected function read(string $key): array
     {
-        foreach ($this->files as $file=>$drive) {
-
-            $filename = pathinfo($file,PATHINFO_FILENAME);
-
-            if ($filename === $key) {
-                if (file_exists($file)) {
-                    return (new $drive)->read(file_get_contents($file));
-                }
+        foreach ($this->files as $file => $drive) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            if ($filename === $key && file_exists($file)) {
+                return (new $drive)->read(file_get_contents($file));
             }
         }
 
         return [];
     }
 
-
     /**
+     * Write the configuration file
      * @param string $key
-     * @param array $config
      * @return int
      */
-    protected function write(string $key, array $config) : int
+    protected function write(string $key): int
     {
-        foreach ($this->files as $file=>$drive) {
-
-            $filename = pathinfo($file,PATHINFO_FILENAME);
-
+        foreach ($this->files as $file => $drive) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
             if ($filename === $key) {
-                return file_put_contents($file,(new $drive)->write($config));
+                return file_put_contents($file, (new $drive)->write($this->config));
             }
         }
 

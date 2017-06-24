@@ -1,4 +1,5 @@
 <?php
+
 namespace CrCms\FileConfig\Drives;
 
 use CrCms\FileConfig\Contracts\FormatConfig;
@@ -9,16 +10,14 @@ use CrCms\FileConfig\Contracts\FormatConfig;
  */
 class JsonConfig implements FormatConfig
 {
-
     /**
      * @param string $content
      * @return array
      */
     public function read(string $content): array
     {
-        return json_decode($content,true);
+        return json_decode($content, true);
     }
-
 
     /**
      * @param array $content
@@ -28,5 +27,4 @@ class JsonConfig implements FormatConfig
     {
         return json_encode($content);
     }
-
 }

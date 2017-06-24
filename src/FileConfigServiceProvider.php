@@ -1,11 +1,11 @@
 <?php
+
 namespace CrCms\FileConfig;
 
 use Illuminate\Support\ServiceProvider;
 
 class FileConfigServiceProvider extends ServiceProvider
 {
-
     /**
      * @var bool
      */
@@ -19,20 +19,18 @@ class FileConfigServiceProvider extends ServiceProvider
     /**
      * @var string
      */
-    protected $packagePath = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
-
+    protected $packagePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
     /**
-     *
+     * @return void
      */
     public function boot()
     {
         //move config path
         $this->publishes([
-            $this->packagePath.'config' => config_path(),
+            $this->packagePath . 'config' => config_path(),
         ]);
     }
-
 
     /**
      *
@@ -40,16 +38,15 @@ class FileConfigServiceProvider extends ServiceProvider
     public function register()
     {
         //merge config
-        $configFile = $this->packagePath."config/{$this->namespaceName}.php";
+        $configFile = $this->packagePath . "config/{$this->namespaceName}.php";
         if (file_exists($configFile)) {
             $this->mergeConfigFrom($configFile, $this->namespaceName);
         }
 
-        $this->app->singleton('file.config',function($app){
+        $this->app->singleton('file.config', function ($app) {
             return Factory::fileConfig($app['config']['file_config']);
         });
     }
-
 
     /**
      * @return array
@@ -60,5 +57,4 @@ class FileConfigServiceProvider extends ServiceProvider
             'file.config'
         ];
     }
-
 }

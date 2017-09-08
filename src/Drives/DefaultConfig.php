@@ -3,6 +3,7 @@
 namespace CrCms\FileConfig\Drives;
 
 use CrCms\FileConfig\Contracts\FormatConfig;
+use Illuminate\Support\Arr;
 
 /**
  * Class DefaultConfig
@@ -29,9 +30,8 @@ class DefaultConfig implements FormatConfig
                 continue;
             }
             $value = explode('=', $value);
-            $array[trim($value[0])] = trim($value[1]);
+            $array = array_merge_recursive($array, $this->resolveDot(trim($value[0]), trim($value[1])));
         }
-
         return $array;
     }
 
@@ -41,11 +41,33 @@ class DefaultConfig implements FormatConfig
      */
     public function write(array $content): string
     {
+        $content = Arr::dot($content);
         $string = '';
         foreach ($content as $key => $value) {
             $string .= "{$key}={$value}\n";
         }
 
         return rtrim($string, "\n");
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     * @return array
+     */
+    protected function resolveDot(string $key, string $value): array
+    {
+        if (strpos($key, '.') === false) {
+            return [$key => $value];
+        }
+
+        $keys = array_reverse(explode('.', $key));
+        $result = [];
+        $count = count($keys);
+        for ($i = 0; $i < $count; $i++) {
+            $result = [$keys[$i] => ($i === 0 ? $value : $result)];
+        }
+
+        return $result;
     }
 }

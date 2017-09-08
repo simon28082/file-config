@@ -51,9 +51,12 @@ key1=>value1
 key2=>value2
 
 //get all
-file_config()->load('/path/test.php')->all('test')
+file_config()->load('/path/test.conf')->all('test')
 ```
 
+0.0.3 Add multiple dot depth support
+
+file_config()->load('/path/test.conf')->get('test.depth1.depth2.0')
 
 ## Install
 

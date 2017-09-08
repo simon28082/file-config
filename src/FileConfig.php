@@ -73,9 +73,9 @@ class FileConfig
      * @param string $value
      * @return bool
      */
-    public function put(string $key, string $value): bool
+    public function put(string $key, $value): bool
     {
-        $value = trim($value);
+        $value = $this->formatValue($value);
         $keys = $this->formatKey($key);
         $config = $this->read($keys['name']);
 
@@ -134,7 +134,7 @@ class FileConfig
     protected function formatFile(): array
     {
         foreach ($this->config['files'] as $key => $file) {
-            $drive = is_numeric($key) ? $this->config['default_drive'] : $key;
+            is_numeric($key) ? $drive = $this->config['default_drive'] : list($drive,$file) = [$file,$key];
             $this->files[$file] = $drive;
         }
 
@@ -160,18 +160,37 @@ class FileConfig
 
     /**
      * Write the configuration file
+     *
      * @param string $key
+     * @param array $content
      * @return int
      */
-    protected function write(string $key): int
+    protected function write(string $key, array $content): int
     {
         foreach ($this->files as $file => $drive) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
             if ($filename === $key) {
-                return file_put_contents($file, (new $drive)->write($this->config));
+                return file_put_contents($file, (new $drive)->write($content));
             }
         }
 
         return 0;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    protected function formatValue($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => &$value) {
+                $value = $this->formatValue($value);
+            }
+        } else {
+            $data = trim($data);
+        }
+
+        return $data;
     }
 }

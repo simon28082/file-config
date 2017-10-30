@@ -81,10 +81,11 @@ class FileConfig
 
         if (empty($keys['key'])) {
             $config = $value;
+        } else if ($this->has($key)) {
+            //引用传值不可返回$config
+            Arr::set($config,$keys['key'],$value);
         } else {
-            $config = $this->has($key) ?
-                Arr::set($config, $keys['key'], $value) :
-                Arr::prepend($config, $value, $keys['key']);
+            $config = Arr::prepend($config, $value, $keys['key']);
         }
 
         return (bool)$this->write($keys['name'], $config);

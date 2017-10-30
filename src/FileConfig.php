@@ -79,9 +79,13 @@ class FileConfig
         $keys = $this->formatKey($key);
         $config = $this->read($keys['name']);
 
-        $config = $this->has($key) ?
-            Arr::set($config, $keys['key'], $value) :
-            Arr::prepend($config, $value, $keys['key']);
+        if (empty($keys['key'])) {
+            $config = $value;
+        } else {
+            $config = $this->has($key) ?
+                Arr::set($config, $keys['key'], $value) :
+                Arr::prepend($config, $value, $keys['key']);
+        }
 
         return (bool)$this->write($keys['name'], $config);
     }

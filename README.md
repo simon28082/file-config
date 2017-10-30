@@ -23,6 +23,10 @@ file_config([
     crcms.a=>'a',
     crcms.b=>'b'
 ])
+
+//or
+
+file_config()->put('crcms.a',['k'=>'k','s'=>'s'])
 ```
 
 get
@@ -57,6 +61,17 @@ file_config()->load('/path/test.conf')->all('test')
 0.0.3 Add multiple dot depth support
 
 file_config()->load('/path/test.conf')->get('test.depth1.depth2.0')
+
+0.0.4 Overwrite all configurations
+
+```
+file_config(['crcms'=>[1,2,3]])
+
+//or
+
+file_config()->put('crcms',['key'=>[1,'value']])
+```
+
 
 ## Install
 

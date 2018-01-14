@@ -83,7 +83,7 @@ class FileConfig
             $config = $value;
         } else if ($this->has($key)) {
             //引用传值不可返回$config
-            Arr::set($config,$keys['key'],$value);
+            Arr::set($config, $keys['key'], $value);
         } else {
             $config = Arr::prepend($config, $value, $keys['key']);
         }
@@ -139,7 +139,7 @@ class FileConfig
     protected function formatFile(): array
     {
         foreach ($this->config['files'] as $key => $file) {
-            is_numeric($key) ? $drive = $this->config['default_drive'] : list($drive,$file) = [$file,$key];
+            is_numeric($key) ? $drive = $this->config['default_drive'] : list($drive, $file) = [$file, $key];
             $this->files[$file] = $drive;
         }
 
@@ -156,7 +156,7 @@ class FileConfig
         foreach ($this->files as $file => $drive) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
             if ($filename === $key && file_exists($file)) {
-                return (new $drive)->read(file_get_contents($file));
+                return (new $drive)->read($this->getFileContent($file));
             }
         }
 
@@ -175,7 +175,7 @@ class FileConfig
         foreach ($this->files as $file => $drive) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
             if ($filename === $key) {
-                return file_put_contents($file, (new $drive)->write($content));
+                return file_put_contents($file, (new $drive)->write($content), LOCK_EX);
             }
         }
 
@@ -197,5 +197,23 @@ class FileConfig
         }
 
         return $data;
+    }
+
+    /**
+     * 获取文件内容
+     * @param string $file
+     */
+    protected function getFileContent(string $file): string
+    {
+        $fp = fopen($file, "r");
+
+        if (flock($fp, LOCK_EX)) {
+            $contents = fread($fp, filesize($file));
+            flock($fp, LOCK_UN);    // 释放锁定
+        }
+
+        fclose($fp);
+
+        return $contents;
     }
 }

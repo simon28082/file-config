@@ -45,10 +45,10 @@ class FileConfig
     /**
      * Get the specified value
      * @param string $key
-     * @param string $default
-     * @return string
+     * @param mixed $default
+     * @return mixed
      */
-    public function get(string $key, string $default = ''): string
+    public function get(string $key, $default = null)
     {
         $keys = $this->formatKey($key);
 

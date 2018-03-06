@@ -207,7 +207,7 @@ class FileConfig
     {
         $fp = fopen($file, "r");
 
-        if (flock($fp, LOCK_EX)) {
+        if (flock($fp, LOCK_SH)) {
             $contents = fread($fp, filesize($file));
             flock($fp, LOCK_UN);    // 释放锁定
         }

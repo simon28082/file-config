@@ -30,8 +30,9 @@ class DefaultConfig implements FormatConfig
                 continue;
             }
             $value = explode('=', $value);
-            $array = array_merge_recursive($array, $this->resolveDot(trim($value[0]), trim($value[1])));
+            $this->array_merge_recursive_adv($array, $this->resolveDot(trim($value[0]), trim($value[1])));
         }
+
         return $array;
     }
 
@@ -69,5 +70,38 @@ class DefaultConfig implements FormatConfig
         }
 
         return $result;
+    }
+
+    /**
+     * 递归的合并数组，重新编号整数键并将新值添加到现有的值
+     *
+     * @param array $array1
+     * @param $array2
+     * @return array
+     */
+    protected function array_merge_recursive_adv(array &$array1, array $array2): array
+    {
+        foreach ($array2 as $key => $value) {
+            if (array_key_exists($key, $array1)) {
+                if (is_array($value)) {
+                    $this->array_merge_recursive_adv($array1[$key], $value);
+                } else {
+                    if (!empty($array1[$key])) {
+                        if (is_array($array1[$key])) {
+                            array_push($array1[$key], $value);
+                        } else {
+                            $array1[$key] = [$array1[$key]];
+                            $array1[$key][] = $value;
+                        }
+                    } else if (empty($array1[$key])) {
+                        $array1[$key] = $value;
+                    }
+                }
+            } else {
+                $array1[$key] = $value;
+            }
+        }
+
+        return $array1;
     }
 }
